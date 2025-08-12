@@ -34,7 +34,8 @@ To run the game:
 bash
 
 
-python chessMain.py
+python chess/chessMain.py
+
 
 
 
