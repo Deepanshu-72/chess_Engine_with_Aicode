@@ -22,23 +22,20 @@ A Python-based Chess Engine built using **Pygame** with AI move generation and c
    cd chess_Engine_with_Aicode
 
 
-Install dependencies
-
-Install Dependencies
+2️⃣ Install Dependencies
 Make sure you have Python 3.8+ installed, then run:
 
 bash
-Copy
-Edit
+
+
 pip install -r requirements.txt
+
+
 3️⃣ Run the Game
 bash
-Copy
-Edit
+
+
 python chess/chessMain.py
-
-
-
 
 
 
