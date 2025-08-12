@@ -41,7 +41,7 @@ def main():
     playerClick = [] #keep track of user last move ( two tuple : [(6,4) ,(4,4)],intial and final square of pice
     gameOver = False
     playerOne = True # if human is playing with white then true, if ai is playing then false
-    plyerTwo = False# same as above but for black
+    plyerTwo = True# same as above but for black
 
 
 
