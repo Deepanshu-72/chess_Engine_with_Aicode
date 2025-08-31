@@ -40,7 +40,7 @@ def main():
     sqSelected = () #tuple # intially no squre selected # keep track of the last click of user (tuple:(row,col)), means it stores where user  want to place the pice or wich pice or square is selected
     playerClick = [] #keep track of user last move ( two tuple : [(6,4) ,(4,4)],intial and final square of pice
     gameOver = False
-    playerOne = True # if human is playing with white then true, if ai is playing then false
+    playerOne = False # if human is playing with white then true, if ai is playing then false
     plyerTwo = False# same as above but for black
 
 
@@ -50,7 +50,7 @@ def main():
 
     run = True
     while run:
-        humanTurn = (gs.whitetomove and playerOne) or (not gs.whitetomove and plyerTwo)
+        humanTurn = (gs.whitetomove and playerOne) or (not gs.whitetomove and plyerTwo) # checking for weather human turn or AI , if AI it will block the mouse events , but key events are not affected
         for e in p.event.get():
             if e.type == p.QUIT:
                 run = False
@@ -82,24 +82,29 @@ def main():
 
 
 
-            elif e.type == p.KEYDOWN:
+            elif e.type == p.KEYDOWN: # undo button
                 if e.key == p.K_z:
                     gs.undoMove()
                     gs.undoMove()
                     moveMade = True
                     animate = False
-                if e.key == p.K_r:
+                    gameOver = False
+
+
+
+                if e.key == p.K_r:  # reset the game whe press r
                     gs = cE.Gamestate()
                     validMoves = gs.getValidMoves()
                     sqSelected = ()
                     playerClick = []
                     moveMade = False
                     animate = False
+                    gameOver = False
 
 
         # Ai move finder
         if not gameOver and not humanTurn:
-            AIMove = SmartMoveFinder.findBestMove(gs, validMoves)
+            AIMove = SmartMoveFinder.findBestMoveMinMax(gs, validMoves)
             if AIMove is None:
                  AIMove = SmartMoveFinder.findRandomMove(validMoves)
             gs.makeMove(AIMove)

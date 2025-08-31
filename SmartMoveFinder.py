@@ -8,7 +8,9 @@ import  random
 
 pieceScore = {"K" : 0, "Q" : 10, "R" :5, "B" : 3, "N" : 3, "p" : 1}
 CHECKMATE = 1000
-staleMate = 0
+STALEMATE = 0
+DEPTH = 3
+
 
 '''picks and return random move'''
 def findRandomMove( validMoves):
@@ -24,20 +26,26 @@ def findBestMove(gs, validMoves):
     random.shuffle(validMoves)
     for playerMove in validMoves:
         gs.makeMove(playerMove)
-        opponentsMoves = gs.getValidMoves()
-        opponentMaxScore = - CHECKMATE
-        for opponentsMove in opponentsMoves:
-            gs.makeMove(opponentsMove)
-            if gs.checkMate:
-                score = -turnMultiplier * CHECKMATE
-            elif gs.staleMate:
-                score = 0
-            else:
-                score = -turnMultiplier * scoreMaterial(gs.board)
-            if score > opponentMaxScore:
-                opponentMaxScore = score
+        if gs.staleMate:
+            opponentMaxScore = STALEMATE
+        elif gs.checkMate:
+            opponentMinMaxScore = - CHECKMATE
+        else:
+            opponentsMoves = gs.getValidMoves()
+            opponentMaxScore = - CHECKMATE
+            for opponentsMove in opponentsMoves:
+                gs.makeMove(opponentsMove)
+                gs.getValidMoves()
+                if gs.checkMate:
+                    score =  CHECKMATE
+                elif gs.staleMate:
+                    score = 0
+                else:
+                    score = -turnMultiplier * scoreMaterial(gs.board)
+                if score > opponentMaxScore:
+                    opponentMaxScore = score
 
-            gs.undoMove()
+                gs.undoMove()
 
 
         if opponentMaxScore < opponentMinMaxScore:
@@ -45,6 +53,79 @@ def findBestMove(gs, validMoves):
             bestPlayerMove = playerMove
         gs.undoMove()
     return bestPlayerMove
+
+
+
+'''helper method to make the first recursive call'''
+
+def findBestMoveMinMax(gs, validMoves):
+    global nextMove
+    nextMove = None
+    findMoveMinMax(gs,validMoves,DEPTH, gs.whitetomove)
+    return nextMove
+
+
+def findMoveMinMax(gs, validMoves, depth, whiteToMove):
+    global nextMove
+    if depth == 0:
+        return scoreMaterial(gs.board)
+
+    if whiteToMove:
+        maxScore = -CHECKMATE
+        random.shuffle(validMoves)
+        for move in validMoves:
+            gs.makeMove(move)
+            nextMoves = gs.getValidMoves()
+            score = findMoveMinMax(gs, nextMoves, depth -1, False)
+            if score > maxScore:
+                maxScore = score
+                if depth == DEPTH:
+                    nextMove = move
+            gs.undoMove()
+        return maxScore
+
+
+    else:
+        minScore = CHECKMATE
+        random.shuffle(validMoves)
+        for move in validMoves:
+            gs.makeMove(move)
+            nextMoves = gs.getValidMoves()
+            score = findMoveMinMax(gs, nextMoves, depth-1, True)
+            if score < minScore:
+                minScore = score
+                if depth == DEPTH:
+                    nextMove = move
+            gs.undoMove()
+        return minScore
+
+
+
+
+def scoreBoard(gs):
+    if gs.checkMate:
+        if gs.whiteToMove:
+            return -CHECKMATE
+        else:
+            return CHECKMATE
+
+    score = 0
+    for row in board:
+        for square in row:
+            if square[0] == 'w':
+                score += pieceScore[square[1]]
+            elif square[0] == 'b':
+                score -= pieceScore[square[1]]
+    return score
+
+
+
+
+
+
+
+
+
 
 
 

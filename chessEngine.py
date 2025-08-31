@@ -129,6 +129,13 @@ class Gamestate():
                     self.board[move.endRow][move.endCol + 1] = '__'
 
 
+            # add this because if we undo move we also have to undo the stalemate and checkmate valriables
+            self.checkMate = False
+            self.staleMate = False
+
+
+
+
 
 
 
