@@ -9,7 +9,7 @@ import  random
 pieceScore = {"K" : 0, "Q" : 10, "R" :5, "B" : 3, "N" : 3, "p" : 1}
 CHECKMATE = 1000
 STALEMATE = 0
-DEPTH = 3
+DEPTH = 2
 
 
 '''picks and return random move'''
@@ -61,14 +61,15 @@ def findBestMove(gs, validMoves):
 def findBestMoveMinMax(gs, validMoves):
     global nextMove
     nextMove = None
-    findMoveMinMax(gs,validMoves,DEPTH, gs.whitetomove)
+    #findMoveMinMax(gs,validMoves,DEPTH, gs.whitetomove)
+    findMoveNegaMax(gs,validMoves,DEPTH,1 if gs.whitetomove else -1)
     return nextMove
 
 
 def findMoveMinMax(gs, validMoves, depth, whiteToMove):
     global nextMove
     if depth == 0:
-        return scoreMaterial(gs.board)
+        return scoreBoard(gs)
 
     if whiteToMove:
         maxScore = -CHECKMATE
@@ -100,17 +101,39 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
         return minScore
 
 
+def findMoveNegaMax(gs,validMoves,depth,turnMultiplier):
+    global nextMove
+    if depth ==0:
+        return turnMultiplier*scoreBoard(gs)
+
+    maxScore = -CHECKMATE
+    random.shuffle(validMoves)
+    for move in validMoves:
+        gs.makeMove(move)
+        nextMoves = gs.getValidMoves()
+        score = -findMoveNegaMax(gs, nextMoves, depth-1,-turnMultiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.undoMove()
+    return maxScore
+
+
+
+
+
 
 
 def scoreBoard(gs):
     if gs.checkMate:
-        if gs.whiteToMove:
+        if gs.whitetomove:
             return -CHECKMATE
         else:
             return CHECKMATE
 
     score = 0
-    for row in board:
+    for row in gs.board:
         for square in row:
             if square[0] == 'w':
                 score += pieceScore[square[1]]
