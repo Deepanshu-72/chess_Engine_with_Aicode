@@ -40,7 +40,7 @@ def main():
     sqSelected = () #tuple # intially no squre selected # keep track of the last click of user (tuple:(row,col)), means it stores where user  want to place the pice or wich pice or square is selected
     playerClick = [] #keep track of user last move ( two tuple : [(6,4) ,(4,4)],intial and final square of pice
     gameOver = False
-    playerOne = True # if human is playing with white then true, if ai is playing then false
+    playerOne = False # if human is playing with white then true, if ai is playing then false
     plyerTwo = False# same as above but for black
 
 
