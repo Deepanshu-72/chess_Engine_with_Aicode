@@ -9,7 +9,7 @@ import  random
 pieceScore = {"K" : 0, "Q" : 10, "R" :5, "B" : 3, "N" : 3, "p" : 1}
 CHECKMATE = 1000
 STALEMATE = 0
-DEPTH = 2
+DEPTH = 3
 
 
 '''picks and return random move'''
@@ -59,10 +59,12 @@ def findBestMove(gs, validMoves):
 '''helper method to make the first recursive call'''
 
 def findBestMoveMinMax(gs, validMoves):
+    # this is our helper method for calling our main mim max .. and other method
     global nextMove
     nextMove = None
     #findMoveMinMax(gs,validMoves,DEPTH, gs.whitetomove)
-    findMoveNegaMax(gs,validMoves,DEPTH,1 if gs.whitetomove else -1)
+    #findMoveNegaMax(gs,validMoves,DEPTH,1 if gs.whitetomove else -1)
+    findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whitetomove else -1)
     return nextMove
 
 
@@ -117,6 +119,29 @@ def findMoveNegaMax(gs,validMoves,depth,turnMultiplier):
             if depth == DEPTH:
                 nextMove = move
         gs.undoMove()
+    return maxScore
+
+
+def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha , beta, turnMultiplier):
+    global nextMove
+    if depth ==0:
+        return turnMultiplier*scoreBoard(gs)
+
+    maxScore = -CHECKMATE
+    random.shuffle(validMoves)
+    for move in validMoves:
+        gs.makeMove(move)
+        nextMoves = gs.getValidMoves()
+        score = -findMoveNegaMaxAlphaBeta(gs, nextMoves, depth-1, -beta, -alpha, -turnMultiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.undoMove()
+        if maxScore > alpha:
+            alpha = maxScore
+        if alpha >= beta:
+            break
     return maxScore
 
 
